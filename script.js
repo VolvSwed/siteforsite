@@ -5,6 +5,60 @@ const glow = document.querySelector(".cursor-glow");
 const tiltCard = document.querySelector("[data-tilt]");
 const form = document.querySelector("#project-form");
 const toast = document.querySelector(".toast");
+const sloganRoot = document.querySelector("[data-visit-slogan]");
+
+const visitSlogans = [
+  ["Точка, где идея", "становится", "цифровым продуктом."],
+  ["Ваш продукт", "заметят", "и запомнят."],
+  ["Превращаем сложное", "в ясное", "и красивое."],
+  ["Интерфейсы с характером.", "Код со смыслом.", "Запуск без шума."],
+  ["От первой мысли", "до работающего", "продукта."],
+];
+
+const renderVisitSlogan = () => {
+  if (!sloganRoot) return;
+
+  let previousIndex = -1;
+  try {
+    previousIndex = Number.parseInt(localStorage.getItem("kindot-slogan-index") || "-1", 10);
+  } catch {
+    previousIndex = -1;
+  }
+
+  const available = visitSlogans
+    .map((_, index) => index)
+    .filter((index) => index !== previousIndex);
+  const nextIndex = available[Math.floor(Math.random() * available.length)];
+
+  try {
+    localStorage.setItem("kindot-slogan-index", String(nextIndex));
+  } catch {
+    // The slogan still works when storage is disabled; only visit-to-visit memory is skipped.
+  }
+
+  sloganRoot.replaceChildren();
+  sloganRoot.setAttribute("aria-label", visitSlogans[nextIndex].join(" "));
+
+  let wordIndex = 0;
+  visitSlogans[nextIndex].forEach((text, lineIndex) => {
+    const line = document.createElement("span");
+    line.className = `slogan-line ${lineIndex === 1 ? "title-accent slogan-accent" : lineIndex === 0 ? "slogan-lead" : "slogan-tail"}`;
+
+    text.split(" ").forEach((word, index, words) => {
+      const wordElement = document.createElement("span");
+      wordElement.className = "slogan-word";
+      wordElement.textContent = word;
+      wordElement.style.animationDelay = `${120 + wordIndex * 55}ms`;
+      line.appendChild(wordElement);
+      if (index < words.length - 1) line.append(" ");
+      wordIndex += 1;
+    });
+
+    sloganRoot.appendChild(line);
+  });
+};
+
+renderVisitSlogan();
 
 const updateHeader = () => header?.classList.toggle("scrolled", window.scrollY > 20);
 updateHeader();
@@ -93,7 +147,7 @@ form?.addEventListener("submit", async (event) => {
   const data = new FormData(form);
   const details = String(data.get("details") || "").trim();
   const message = [
-    "Здравствуйте! Хочу обсудить проект.",
+    "Здравствуйте! Хочу обсудить проект с KIN.DOT.",
     "",
     `Имя: ${data.get("name")}`,
     `Проект: ${data.get("project")}`,

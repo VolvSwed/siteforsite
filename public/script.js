@@ -222,22 +222,6 @@ function setupNavigation() {
   }, { passive: true });
 }
 
-function setupCursor() {
-  if (!window.matchMedia("(pointer: fine)").matches) return;
-  const ring = select("[data-cursor-ring]");
-  const dot = select("[data-cursor-dot]");
-  if (!ring || !dot) return;
-  window.addEventListener("pointermove", (event) => {
-    document.body.classList.add("cursor-active");
-    ring.style.transform = `translate3d(${event.clientX - ring.offsetWidth / 2}px, ${event.clientY - ring.offsetHeight / 2}px, 0)`;
-    dot.style.transform = `translate3d(${event.clientX - 2.5}px, ${event.clientY - 2.5}px, 0)`;
-  }, { passive: true });
-  selectAll("a, button, input, textarea, select, [data-tilt]").forEach((element) => {
-    element.addEventListener("pointerenter", () => document.body.classList.add("cursor-hover"));
-    element.addEventListener("pointerleave", () => document.body.classList.remove("cursor-hover"));
-  });
-}
-
 function setupScrollProgress() {
   const progress = select("[data-progress]");
   if (!progress) return;
@@ -301,7 +285,6 @@ function setupMagnetic() {
 
 pickVisitSlogan();
 setupNavigation();
-setupCursor();
 setupScrollProgress();
 setupStage();
 setupTilt();

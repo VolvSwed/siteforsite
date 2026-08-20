@@ -7,14 +7,12 @@
     "node": ">=20.3.0"
   },
   "scripts": {
-    "dev": "wrangler dev",
-    "db:local": "wrangler d1 migrations apply vyraz-content --local",
-    "db:remote": "wrangler d1 migrations apply vyraz-content --remote",
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
     "test": "node --test",
-    "check": "node --check src/worker.js && node --check public/script.js && node --check public/admin.js",
-    "deploy": "wrangler deploy"
+    "check": "node --check src/server.js && node --check src/database.js && node --check src/validation.js && node --check public/script.js && node --check public/admin.js"
   },
-  "devDependencies": {
-    "wrangler": "4.86.0"
+  "dependencies": {
+    "better-sqlite3": "12.6.2"
   }
 }

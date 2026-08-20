@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { cleanEmail, cleanText, cleanUrl } from "../src/worker.js";
+import { cleanEmail, cleanText, cleanUrl } from "../src/validation.js";
 
 test("cleanEmail normalizes valid email", () => {
   assert.equal(cleanEmail("  CLIENT@EXAMPLE.BY "), "client@example.by");

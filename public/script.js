@@ -35,9 +35,11 @@ function setFormMessage(form, message, type = "success") {
 }
 
 async function request(url, options = {}) {
+  const headers = { ...(options.headers || {}) };
+  if (options.body) headers["Content-Type"] = "application/json";
   const response = await fetch(url, {
     ...options,
-    headers: { "Content-Type": "application/json", ...(options.headers || {}) },
+    headers,
   });
   const data = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(data.error || "Не удалось выполнить запрос.");
@@ -110,6 +112,8 @@ function applySettings(settings = {}) {
     emailWrap.hidden = false;
     emailLink.href = `mailto:${settings.contact_email}`;
     emailLink.textContent = settings.contact_email;
+  } else if (emailWrap) {
+    emailWrap.hidden = true;
   }
 }
 
@@ -207,6 +211,12 @@ function setupNavigation() {
     nav?.classList.remove("open");
     nav?.setAttribute("aria-hidden", "true");
   }));
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return;
+    menuButton?.setAttribute("aria-expanded", "false");
+    nav?.classList.remove("open");
+    nav?.setAttribute("aria-hidden", "true");
+  });
   window.addEventListener("scroll", () => {
     select("[data-header]")?.classList.toggle("scrolled", window.scrollY > 16);
   }, { passive: true });
@@ -214,17 +224,88 @@ function setupNavigation() {
 
 function setupCursor() {
   if (!window.matchMedia("(pointer: fine)").matches) return;
-  const dot = select("[data-cursor]");
-  if (!dot) return;
+  const ring = select("[data-cursor-ring]");
+  const dot = select("[data-cursor-dot]");
+  if (!ring || !dot) return;
   window.addEventListener("pointermove", (event) => {
-    dot.style.opacity = "1";
-    dot.style.transform = `translate3d(${event.clientX - 8}px, ${event.clientY - 8}px, 0)`;
+    document.body.classList.add("cursor-active");
+    ring.style.transform = `translate3d(${event.clientX - ring.offsetWidth / 2}px, ${event.clientY - ring.offsetHeight / 2}px, 0)`;
+    dot.style.transform = `translate3d(${event.clientX - 2.5}px, ${event.clientY - 2.5}px, 0)`;
   }, { passive: true });
+  selectAll("a, button, input, textarea, select, [data-tilt]").forEach((element) => {
+    element.addEventListener("pointerenter", () => document.body.classList.add("cursor-hover"));
+    element.addEventListener("pointerleave", () => document.body.classList.remove("cursor-hover"));
+  });
+}
+
+function setupScrollProgress() {
+  const progress = select("[data-progress]");
+  if (!progress) return;
+  let scheduled = false;
+  const update = () => {
+    const distance = document.documentElement.scrollHeight - window.innerHeight;
+    progress.style.transform = `scaleX(${distance > 0 ? Math.min(1, window.scrollY / distance) : 0})`;
+    scheduled = false;
+  };
+  window.addEventListener("scroll", () => {
+    if (scheduled) return;
+    scheduled = true;
+    requestAnimationFrame(update);
+  }, { passive: true });
+  update();
+}
+
+function setupStage() {
+  if (!window.matchMedia("(pointer: fine)").matches || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const stage = select("[data-stage]");
+  const core = select("[data-stage-core]");
+  if (!stage || !core) return;
+  stage.addEventListener("pointermove", (event) => {
+    const rect = stage.getBoundingClientRect();
+    core.style.setProperty("--mx", `${((event.clientX - rect.left) / rect.width - .5) * 18}px`);
+    core.style.setProperty("--my", `${((event.clientY - rect.top) / rect.height - .5) * 18}px`);
+  });
+  stage.addEventListener("pointerleave", () => {
+    core.style.setProperty("--mx", "0px");
+    core.style.setProperty("--my", "0px");
+  });
+}
+
+function setupTilt() {
+  if (!window.matchMedia("(pointer: fine)").matches || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  selectAll("[data-tilt]").forEach((card) => {
+    card.addEventListener("pointermove", (event) => {
+      const rect = card.getBoundingClientRect();
+      card.style.setProperty("--ry", `${((event.clientX - rect.left) / rect.width - .5) * 4}deg`);
+      card.style.setProperty("--rx", `${((event.clientY - rect.top) / rect.height - .5) * -4}deg`);
+    });
+    card.addEventListener("pointerleave", () => {
+      card.style.setProperty("--rx", "0deg");
+      card.style.setProperty("--ry", "0deg");
+    });
+  });
+}
+
+function setupMagnetic() {
+  if (!window.matchMedia("(pointer: fine)").matches || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  selectAll(".magnetic").forEach((element) => {
+    element.addEventListener("pointermove", (event) => {
+      const rect = element.getBoundingClientRect();
+      const x = (event.clientX - rect.left - rect.width / 2) * .12;
+      const y = (event.clientY - rect.top - rect.height / 2) * .12;
+      element.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+    });
+    element.addEventListener("pointerleave", () => { element.style.transform = ""; });
+  });
 }
 
 pickVisitSlogan();
 setupNavigation();
 setupCursor();
+setupScrollProgress();
+setupStage();
+setupTilt();
+setupMagnetic();
 setupForms();
 setupReveal();
 loadContent();

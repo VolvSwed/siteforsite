@@ -2,7 +2,9 @@
 Thumbs.db
 *.log
 node_modules/
-.wrangler/
-.dev.vars
+.env
 .env*
 !.env.example
+data/*.sqlite
+data/*.sqlite-shm
+data/*.sqlite-wal

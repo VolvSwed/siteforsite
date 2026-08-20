@@ -53,6 +53,7 @@ function renderLeads() {
   const list = $("[data-leads-list]");
   list.replaceChildren();
   $("[data-leads-count]").textContent = state.leads.filter((lead) => lead.status === "new").length;
+  $("[data-leads-metric]").textContent = state.leads.filter((lead) => lead.status === "new").length;
   if (!state.leads.length) {
     list.append(node("div", "empty", "Заявок пока нет."));
     return;
@@ -90,6 +91,7 @@ function renderLeads() {
 function renderWorks() {
   const list = $("[data-works-list]");
   list.replaceChildren();
+  $("[data-works-metric]").textContent = state.works.filter((work) => work.published).length;
   if (!state.works.length) {
     list.append(node("div", "empty", "Работ пока нет. Добавьте первый реальный кейс."));
     return;
@@ -120,6 +122,7 @@ function renderReviews() {
   const list = $("[data-reviews-list]");
   list.replaceChildren();
   $("[data-reviews-count]").textContent = state.reviews.filter((review) => review.status === "pending").length;
+  $("[data-reviews-metric]").textContent = state.reviews.filter((review) => review.status === "pending").length;
   if (!state.reviews.length) {
     list.append(node("div", "empty", "Отзывов пока нет."));
     return;

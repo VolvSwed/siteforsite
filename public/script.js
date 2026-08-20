@@ -69,7 +69,10 @@ function createWorkCard(work) {
     link.rel = "noopener noreferrer";
     link.className = "work-link";
     link.setAttribute("aria-label", `Открыть проект «${work.title}»`);
-    link.textContent = "↗";
+    const arrow = document.createElement("span");
+    arrow.className = "ui-arrow";
+    arrow.setAttribute("aria-hidden", "true");
+    link.append(arrow);
     article.append(link);
   }
   return article;
@@ -270,25 +273,11 @@ function setupTilt() {
   });
 }
 
-function setupMagnetic() {
-  if (!window.matchMedia("(pointer: fine)").matches || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  selectAll(".magnetic").forEach((element) => {
-    element.addEventListener("pointermove", (event) => {
-      const rect = element.getBoundingClientRect();
-      const x = (event.clientX - rect.left - rect.width / 2) * .12;
-      const y = (event.clientY - rect.top - rect.height / 2) * .12;
-      element.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-    });
-    element.addEventListener("pointerleave", () => { element.style.transform = ""; });
-  });
-}
-
 pickVisitSlogan();
 setupNavigation();
 setupScrollProgress();
 setupStage();
 setupTilt();
-setupMagnetic();
 setupForms();
 setupReveal();
 loadContent();

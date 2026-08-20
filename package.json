@@ -1,0 +1,17 @@
+{
+  "name": "vyraz-by",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "db:local": "wrangler d1 migrations apply vyraz-content --local",
+    "db:remote": "wrangler d1 migrations apply vyraz-content --remote",
+    "test": "node --test",
+    "check": "node --check src/worker.js && node --check public/script.js && node --check public/admin.js",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}

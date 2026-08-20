@@ -26,6 +26,8 @@ wrangler.jsonc          конфигурация Cloudflare Worker
 
 ## Локальный запуск
 
+Требуется Node.js `20.3` или новее.
+
 ```bash
 npm install
 cp .dev.vars.example .dev.vars
